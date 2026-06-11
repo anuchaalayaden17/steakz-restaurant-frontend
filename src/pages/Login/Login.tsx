@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
 
 const demoAccounts = [
-  { label: "Admin", email: "admin@steakz.com", password: "Admin123!" },
+  { label: "Admin", email: "admin@steakz.com", password: "12345678" },
   { label: "HQ Manager - All Branches", email: "hq.manager@steakz.com", password: "12345678" },
 
   { label: "BM - London Central", email: "bm.london.central@steakz.com", password: "12345678" },

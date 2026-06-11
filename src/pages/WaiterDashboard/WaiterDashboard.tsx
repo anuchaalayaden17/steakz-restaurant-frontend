@@ -20,6 +20,11 @@ function WaiterDashboard() {
   const [quantity, setQuantity] = useState("1");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
 
+  const [customerFirstName, setCustomerFirstName] = useState("");
+  const [customerLastName, setCustomerLastName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -143,6 +148,11 @@ function WaiterDashboard() {
     e.preventDefault();
 
     try {
+      if (!customerFirstName || !customerLastName) {
+        alert("Please enter customer first name and last name.");
+        return;
+      }
+
       if (!selectedTableId) {
         alert("Please select a table.");
         return;
@@ -157,6 +167,12 @@ function WaiterDashboard() {
         "/waiter/orders",
         {
           tableId: Number(selectedTableId),
+          customer: {
+            firstName: customerFirstName,
+            lastName: customerLastName,
+            phoneNumber: customerPhone,
+            email: customerEmail,
+          },
           items: cart.map((item) => ({
             menuItemId: item.menuItemId,
             quantity: item.quantity,
@@ -171,6 +187,10 @@ function WaiterDashboard() {
       setSelectedMenuItemId("");
       setQuantity("1");
       setCategoryFilter("ALL");
+      setCustomerFirstName("");
+      setCustomerLastName("");
+      setCustomerPhone("");
+      setCustomerEmail("");
       setCart([]);
 
       fetchData();
@@ -205,8 +225,8 @@ function WaiterDashboard() {
       <div className="page-header">
         <h2>Waiter POS</h2>
         <p>
-          Create table orders, send them to the kitchen and deliver ready
-          orders.
+          Create customer table orders, send them to the kitchen and deliver
+          ready orders.
         </p>
       </div>
 
@@ -234,9 +254,39 @@ function WaiterDashboard() {
 
       <div className="dashboard-grid">
         <div className="dashboard-panel">
-          <h3>Create Order</h3>
+          <h3>Create Customer Order</h3>
 
           <form className="user-form" onSubmit={sendOrderToKitchen}>
+            <input
+              type="text"
+              placeholder="Customer First Name"
+              value={customerFirstName}
+              onChange={(e) => setCustomerFirstName(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Customer Last Name"
+              value={customerLastName}
+              onChange={(e) => setCustomerLastName(e.target.value)}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Customer Phone Number"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+            />
+
+            <input
+              type="email"
+              placeholder="Customer Email"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+            />
+
             <select
               value={selectedTableId}
               onChange={(e) => setSelectedTableId(e.target.value)}
@@ -351,6 +401,7 @@ function WaiterDashboard() {
             <thead>
               <tr>
                 <th>Order</th>
+                <th>Customer</th>
                 <th>Table</th>
                 <th>Items</th>
                 <th>Total</th>
@@ -362,6 +413,11 @@ function WaiterDashboard() {
               {readyOrders.map((order) => (
                 <tr key={order.orderId}>
                   <td>#{order.orderId}</td>
+                  <td>
+                    {order.customer
+                      ? `${order.customer.firstName} ${order.customer.lastName}`
+                      : "Walk-in"}
+                  </td>
                   <td>Table {order.table?.tableNumber}</td>
                   <td>
                     {order.orderItems.map((item: any) => (
@@ -393,6 +449,7 @@ function WaiterDashboard() {
           <thead>
             <tr>
               <th>Order</th>
+              <th>Customer</th>
               <th>Table</th>
               <th>Items</th>
               <th>Status</th>
@@ -404,6 +461,11 @@ function WaiterDashboard() {
             {orders.map((order) => (
               <tr key={order.orderId}>
                 <td>#{order.orderId}</td>
+                <td>
+                  {order.customer
+                    ? `${order.customer.firstName} ${order.customer.lastName}`
+                    : "Walk-in"}
+                </td>
                 <td>Table {order.table?.tableNumber}</td>
                 <td>
                   {order.orderItems.map((item: any) => (
